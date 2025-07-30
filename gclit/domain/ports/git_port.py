@@ -1,14 +1,18 @@
-# domain/services/git_repository.py
+# domain/services/git_port.py
 from abc import ABC, abstractmethod
 
-class GitServiceABC(ABC):
+class GitPort(ABC):
     @abstractmethod
-    def get_diff(self) -> str:
-        pass
+    def get_stash_diff(self) -> str:
+        import subprocess
+        result = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True)
+        return result.stdout
     
     @abstractmethod
     def get_branch_name(self) -> str:
-        pass
+        import subprocess
+        result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True)
+        return result.stdout.strip()
     
     @abstractmethod
     def get_branch_diff(self, from_branch: str, to_branch: str) -> str:

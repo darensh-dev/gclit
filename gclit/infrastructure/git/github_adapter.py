@@ -1,10 +1,10 @@
-# gclit/infrastructure/git/github_repository.py
+# gclit/infrastructure/git/github_adapter.py
 
 import requests
-from gclit.domain.ports.git_service import GitProvider
+from gclit.domain.ports.git_port import GitPort
 from gclit.domain.models.pull_request import PullRequestInfo
 
-class GitHubRepository(GitProvider):
+class GitHubAdapter(GitPort):
     def __init__(self, token: str, repo: str):
         self.token = token
         self.repo = repo  # Ejemplo: "usuario/repositorio"

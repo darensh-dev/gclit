@@ -1,10 +1,10 @@
-# gclit/infrastructure/git/azure_devops_repository.py
+# gclit/infrastructure/git/azure_devops_adapter.py
 
 import requests
-from gclit.domain.ports.git_service import GitProvider
+from gclit.domain.ports.git_port import GitPort
 from gclit.domain.models.pull_request import PullRequestInfo
 
-class AzureDevOpsRepository(GitProvider):
+class AzureDevOpsAdapter(GitPort):
     def __init__(self, token: str, organization: str, project: str, repo: str):
         self.token = token
         self.organization = organization

@@ -2,7 +2,7 @@
 
 from gclit.domain.ports.llm import LLMProvider
 from gclit.domain.models.pull_request import PullRequestContext
-from gclit.domain.ports.git_service import GitRepository
+from gclit.domain.ports.git_port import GitRepository
 
 
 class GeneratePullRequestDocs:

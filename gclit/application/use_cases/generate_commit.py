@@ -19,13 +19,3 @@ class GenerateCommitMessage:
         )
 
         return self.llm_provider.generate_commit_message(context)
-
-    def _get_git_diff(self) -> str:
-        import subprocess
-        result = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True)
-        return result.stdout
-
-    def _get_branch_name(self) -> str:
-        import subprocess
-        result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True)
-        return result.stdout.strip()

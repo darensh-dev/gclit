@@ -1,9 +1,9 @@
 # gclit/infrastructure/git/git_repository.py
 
 import subprocess
-from gclit.domain.ports.git_service import GitProvider
+from gclit.domain.ports.git_port import GitPort
 
-class GitHubRepository(GitProvider):
+class GitHubAdapter(GitPort):
     def get_branch_diff(self, branch_from: str, branch_to: str) -> str:
         result = subprocess.run(
             ["git", "diff", f"{branch_to}...{branch_from}"],
