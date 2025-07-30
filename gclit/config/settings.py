@@ -8,6 +8,7 @@ CONFIG_PATH = Path.home() / ".gclit" / "config.json"
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
+        env_file=".env",
         extra="ignore",
         frozen=False
     )
@@ -19,14 +20,16 @@ class AppConfig(BaseSettings):
 
     @classmethod
     def load(cls) -> "AppConfig":
+        # Primero instancia con el entorno
+        env_config = cls()  # Aquí sí lee variables del sistema y .env
+        # Luego mergea con JSON (si existe)
         if CONFIG_PATH.exists():
             with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            return cls(**data)
+                file_config = json.load(f)
+            return env_config.model_copy(update=file_config)
         else:
-            config = cls()
-            config.save()
-            return config
+            env_config.save()
+            return env_config
 
     def save(self):
         CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
