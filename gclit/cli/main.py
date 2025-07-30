@@ -1,24 +1,13 @@
 # cli/main.py
 import typer
-from application.use_cases.generate_commit import generate_commit_message
-from config.config_manager import update_config, load_config
+from gclit.application.use_cases.generate_commit import generate_commit_message
+from gclit.application.use_cases.generate_pr_docs import generate_pull_request_docs
+from gclit.cli.commands_config import config_app
+
 
 app = typer.Typer()
-config_app = typer.Typer()
 app.add_typer(config_app, name="config")
 
-@config_app.command("set")
-def set_config(key: str, value: str):
-    """Set configuration value (e.g. gclit config set model gpt-4)"""
-    update_config(key, value)
-    typer.echo(f"✅ Config '{key}' updated to '{value}'")
-
-@config_app.command("show")
-def show_config():
-    """Show current configuration"""
-    config = load_config()
-    for k, v in config.items():
-        typer.echo(f"{k}: {v}")
 
 @app.command()
 def commit(lang: str = "en", auto: bool = False):
@@ -29,6 +18,18 @@ def commit(lang: str = "en", auto: bool = False):
         import subprocess
         subprocess.run(["git", "commit", "-m", message])
         typer.echo("✅ Commit created.")
+
+
+@app.command("pr")
+def pr_docs(
+    branch_from: str = typer.Option(..., "--from", help="Branch origen"),
+    branch_to: str = typer.Option(..., "--to", help="Branch destino"),
+    lang: str = typer.Option(None, "--lang", help="Idioma (default en config)")
+):
+    """Genera título + descripción de PR con IA"""
+    result = generate_pull_request_docs(branch_from, branch_to, lang)
+    typer.echo(f"\n📌 Title:\n{result['title']}\n\n📝 Description:\n{result['body']}\n")
+
 
 if __name__ == "__main__":
     app()

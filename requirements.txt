@@ -6,6 +6,7 @@ openai
 
 # Tipado y validación
 pydantic
+pydantic-settings
 
 # Para ejecutar procesos del sistema (ya está en stdlib, pero por si usas alguna wrapper en el futuro)
 

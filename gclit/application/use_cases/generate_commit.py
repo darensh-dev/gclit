@@ -1,7 +1,7 @@
 # application/use_cases/generate_commit.py
-from domain.models.commit_message import CommitContext
-from config.settings import settings
-from infrastructure.git.git_diff_provider import get_git_diff
+from gclit.domain.models.commit_message import CommitContext
+from gclit.infrastructure.git.git_diff_provider import get_git_diff
+from gclit.config.settings import settings
 
 def generate_commit_message(lang: str = "en") -> str:
     diff = get_git_diff()

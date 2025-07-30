@@ -1,15 +1,16 @@
 # infrastructure/llm/openai_provider.py
 import openai
-from domain.models.commit_message import CommitContext
-from domain.services.llm import LLMProvider
+from gclit.domain.models.commit_message import CommitContext
+from gclit.domain.models.pull_request import PullRequestContext
+from gclit.domain.services.llm import LLMProvider
 
 class OpenAIProvider(LLMProvider):
     def __init__(self, model: str, api_key: str):
         self.model = model
         self.api_key = api_key
+        self.client = openai.OpenAI(api_key=self.api_key)
 
     def generate_commit_message(self, context: CommitContext) -> str:
-        client = openai.OpenAI(api_key=self.api_key)
 
         prompt = (
             f"You are a helpful assistant. Generate a concise Git commit message "
@@ -18,10 +19,35 @@ class OpenAIProvider(LLMProvider):
             f"{context.diff}\n"
         )
 
-        response = client.chat.completions.create(
+        response = self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
         )
 
         return response.choices[0].message.content.strip()
+
+    def generate_pr_documentation(self, context: PullRequestContext) -> dict:
+
+        prompt = (
+            f"Generate a pull request title and markdown description in language '{context.lang}'.\n"
+            f"Changes from branch `{context.branch_from}` to `{context.branch_to}`:\n\n"
+            f"{context.diff}"
+        )
+
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4,
+        )
+
+        content = response.choices[0].message.content.strip()
+
+        # Simple split: assumes format "## Title\n\n## Description"
+        title = content.split("\n")[0].replace("#", "").strip()
+        body = "\n".join(content.split("\n")[1:]).strip()
+
+        return {
+            "title": title,
+            "body": body
+        }
