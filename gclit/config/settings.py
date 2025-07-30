@@ -69,7 +69,7 @@ class AppConfig(BaseSettings):
     #     else:
     #         raise ValueError(f"Invalid config key: {key}")
     #     self.save()
-        
+
     def update(self, key: str, value: str):
         # Dump actual config a dict
         current_data = self.model_dump()
