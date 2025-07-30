@@ -1,0 +1,17 @@
+[project]
+name = "gclit"
+version = "0.1.0"
+description = "Git CLI assistant powered by LLMs"
+authors = [
+    { name="Tu Nombre", email="tucorreo@example.com" }
+]
+dependencies = [
+    "typer[all]",
+    "openai",
+    "pydantic",
+    "python-dotenv"
+]
+requires-python = ">=3.8"
+
+[project.scripts]
+gclit = "gclit.cli.main:app"

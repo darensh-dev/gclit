@@ -1,0 +1,17 @@
+# CLI y argumentos
+typer[all]
+
+# LLMs
+openai
+
+# Tipado y validación
+pydantic
+
+# Para ejecutar procesos del sistema (ya está en stdlib, pero por si usas alguna wrapper en el futuro)
+
+# Para cargar archivos JSON o config si lo deseas
+python-dotenv==1.0.1  # Opcional para futuras configuraciones .env
+
+# Si más adelante usas modelos locales vía LlamaCpp, HuggingFace, etc., puedes incluir:
+# llama-cpp-python
+# transformers

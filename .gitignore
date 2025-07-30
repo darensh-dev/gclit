@@ -1,0 +1,34 @@
+# Entornos virtuales
+.venv/
+env/
+venv/
+
+# Archivos Python compilados
+__pycache__/
+*.py[cod]
+
+# Archivos de logs
+*.log
+
+# Configuración local del proyecto
+.git-assistant.json
+.env
+
+# Archivos temporales
+*.tmp
+*.swp
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Archivos de pruebas
+.coverage
+htmlcov/
+pytest_cache/
+
+# Otros
+dist/
+build/
+*.egg-info/
