@@ -7,11 +7,15 @@ from gclit.infrastructure.llm.openai_provider import OpenAIProvider
 # from infrastructure.llm.claude_provider import ClaudeProvider
 # from infrastructure.llm.local_provider import LocalProvider
 
+
 def get_llm_provider() -> LLMProvider:
     provider = settings.provider.lower()
 
     if provider == "openai":
-        return OpenAIProvider(model=settings.model, api_key=settings.api_key)
+        return OpenAIProvider(
+            model=settings.model,
+            api_key=settings.providers.openai.api_key
+        )
 
     elif provider == "claude":
         # Implementar ClaudeProvider y descomentar
