@@ -1,9 +1,17 @@
 # domain/services/git_repository.py
 from abc import ABC, abstractmethod
 
-class GitRepository(ABC):
+class GitServiceABC(ABC):
     @abstractmethod
-    def get_diff_between_branches(self, from_branch: str, to_branch: str) -> str:
+    def get_diff(self) -> str:
+        pass
+    
+    @abstractmethod
+    def get_branch_name(self) -> str:
+        pass
+    
+    @abstractmethod
+    def get_branch_diff(self, from_branch: str, to_branch: str) -> str:
         pass
 
     @abstractmethod

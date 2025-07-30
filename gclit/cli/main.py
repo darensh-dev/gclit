@@ -21,15 +21,32 @@ def commit(lang: str = "en", auto: bool = False):
         subprocess.run(["git", "commit", "-m", message])
         typer.echo("✅ Commit created.")
 
+
 @app.command("pr")
 def pr_docs(
-    branch_from: str = typer.Option(..., "--from"),
-    branch_to: str = typer.Option(..., "--to"),
-    lang: str = typer.Option("en", "--lang")
+    branch_from: str = typer.Option(None, "--from", help="Source branch for the PR"),
+    branch_to: str = typer.Option(None, "--to", help="Target branch for the PR"),
+    pr_number: int = typer.Option(None, "--pr", help="PR number to update"),
+    lang: str = typer.Option("en", "--lang", help="Language for the documentation")
 ):
+    """
+    Generates or updates pull request documentation.
+
+    Use --from and --to to generate a new PR doc,
+    or use --pr to update an existing one.
+    """
     use_case = GeneratePullRequestDocs(container.get_llm_provider())
-    result = use_case.execute(branch_from, branch_to, lang)
+
+    if pr_number:
+        result = use_case.execute(pr_number=pr_number, lang=lang)
+    elif branch_from and branch_to:
+        result = use_case.execute(branch_from=branch_from, branch_to=branch_to, lang=lang)
+    else:
+        typer.echo("❌ Must provide either --from/--to or --pr.")
+        raise typer.Exit(code=1)
+
     typer.echo(f"\n📌 Title:\n{result['title']}\n\n📝 Description:\n{result['body']}\n")
+
 
 if __name__ == "__main__":
     app()

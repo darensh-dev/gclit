@@ -1,7 +1,7 @@
 # gclit/application/use_cases/generate_commit.py
 
 from gclit.domain.models.commit_message import CommitContext
-from gclit.domain.services.llm import LLMProvider
+from gclit.domain.ports.llm import LLMProvider
 
 class GenerateCommitMessage:
     def __init__(self, llm_provider: LLMProvider):

@@ -2,7 +2,7 @@
 
 from gclit.config.settings import settings
 from gclit.infrastructure.llm.openai_provider import OpenAIProvider
-from gclit.domain.services.llm import LLMProvider
+from gclit.domain.ports.llm import LLMProvider
 
 class Container:
     def __init__(self):
@@ -16,7 +16,7 @@ class Container:
                     model=settings.model,
                     api_key=settings.providers.openai.api_key
                 )
-            # Agrega aquí otros proveedores...
+
             else:
                 raise ValueError(f"Unsupported LLM provider: {provider}")
         return self._llm_provider

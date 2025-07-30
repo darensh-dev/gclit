@@ -2,7 +2,7 @@
 import openai
 from gclit.domain.models.commit_message import CommitContext
 from gclit.domain.models.pull_request import PullRequestContext
-from gclit.domain.services.llm import LLMProvider
+from gclit.domain.ports.llm import LLMProvider
 
 class OpenAIProvider(LLMProvider):
     def __init__(self, model: str, api_key: str):
