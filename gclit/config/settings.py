@@ -57,19 +57,6 @@ class AppConfig(BaseSettings):
         with open(CONFIG_PATH, "w", encoding="utf-8") as f:
             json.dump(self.model_dump(), f, indent=2)
 
-    # def update(self, key: str, value: str):
-    #     if key in self.model_dump():
-    #         setattr(self, key, value)
-    #     elif "." in key:
-    #         parts = key.split(".")
-    #         ref = self
-    #         for part in parts[:-1]:
-    #             ref = getattr(ref, part)
-    #         setattr(ref, parts[-1], value)
-    #     else:
-    #         raise ValueError(f"Invalid config key: {key}")
-    #     self.save()
-
     def update(self, key: str, value: str):
         # Dump actual config a dict
         current_data = self.model_dump()

@@ -1,20 +1,32 @@
-# application/use_cases/generate_pr_docs.py
-from gclit.config.settings import settings
+# gclit/application/use_cases/generate_pr_docs.py
+
+from gclit.domain.services.llm import LLMProvider
 from gclit.domain.models.pull_request import PullRequestContext
-from gclit.infrastructure.llm.provider_factory import get_llm_provider
-from gclit.infrastructure.git.git_diff_provider import get_git_diff
+import subprocess
 
-def generate_pull_request_docs(branch_from: str, branch_to: str, lang: str = None) -> dict:
-    diff = get_git_diff(branch_from, branch_to)
-    if not diff:
-        return {"title": "No changes detected", "body": ""}
+class GeneratePullRequestDocs:
+    def __init__(self, llm_provider: LLMProvider):
+        self.llm_provider = llm_provider
 
-    context = PullRequestContext(
-        diff=diff,
-        branch_from=branch_from,
-        branch_to=branch_to,
-        lang=lang or settings.lang
-    )
+    def execute(self, branch_from: str, branch_to: str, lang: str = "en") -> dict:
+        diff = self._get_diff_between_branches(branch_from, branch_to)
 
-    llm = get_llm_provider()
-    return llm.generate_pr_documentation(context)
+        context = PullRequestContext(
+            diff=diff,
+            branch_from=branch_from,
+            branch_to=branch_to,
+            lang=lang
+        )
+
+        result = self.llm_provider.generate_pr_documentation(context)
+        return {
+            "title": result["title"],
+            "body": result["body"]
+        }
+
+    def _get_diff_between_branches(self, from_branch: str, to_branch: str) -> str:
+        result = subprocess.run(
+            ["git", "diff", f"{to_branch}...{from_branch}"],
+            capture_output=True, text=True
+        )
+        return result.stdout
