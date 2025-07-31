@@ -1,13 +1,13 @@
 # gclit/infrastructure/git/github_adapter.py
 
 import requests
-from gclit.domain.ports.git_port import GitPort
 from gclit.domain.models.pull_request import PullRequestInfo
+from gclit.infrastructure.git.base_git_adapter import BaseGitAdapter
 
-class GitHubAdapter(GitPort):
+class GitHubAdapter(BaseGitAdapter):
     def __init__(self, token: str, repo: str):
         self.token = token
-        self.repo = repo  # Ejemplo: "usuario/repositorio"
+        self.repo = repo
         self.api_url = f"https://api.github.com/repos/{self.repo}"
 
     def _headers(self):
