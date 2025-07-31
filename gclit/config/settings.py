@@ -39,7 +39,7 @@ class AppConfig(BaseSettings):
     )
 
     provider: str = "openai"
-    model: str = "gpt-4o"
+    model: str = "gpt-4o-mini"
     lang: Lang = "en"
 
     # Git providers
