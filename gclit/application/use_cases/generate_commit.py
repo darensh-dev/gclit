@@ -1,6 +1,7 @@
 # gclit/application/use_cases/generate_commit.py
 
 from gclit.domain.models.commit_message import CommitContext
+from gclit.domain.models.common import Lang
 from gclit.domain.ports.git import GitProvider
 from gclit.domain.ports.llm import LLMProvider
 
@@ -10,7 +11,7 @@ class GenerateCommitMessage:
         self.llm_provider = llm_provider
         self.git_provider = git_provider
 
-    def execute(self, lang: str = "en") -> str:
+    def execute(self, lang: Lang = "en") -> str:
         diff = self.git_provider.get_stash_diff()
         if not diff:
             return "No staged changes to generate commit message."

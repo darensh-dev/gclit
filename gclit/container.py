@@ -23,7 +23,7 @@ class Container:
             if provider == "openai":
                 self._llm_provider = OpenAIProvider(
                     model=settings.model,
-                    api_key=settings.providers.openai.api_key
+                    api_key=settings.llm_provider.openai.api_key
                 )
 
             else:

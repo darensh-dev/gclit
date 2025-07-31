@@ -1,21 +1,15 @@
 # gclit/cli/main.py
 
-from enum import Enum
 import typer
 from gclit.cli.utils import handle_cli_errors
 from gclit.container import container
 from gclit.application.use_cases.generate_commit import GenerateCommitMessage
 from gclit.application.use_cases.generate_pr_docs import GeneratePullRequestDocs
 from gclit.cli.commands_config import config_app
-from gclit.domain.exceptions.exception import GclitException
+from gclit.domain.models.common import Lang
 
 app = typer.Typer()
 app.add_typer(config_app, name="config")
-
-
-class LangType(str, Enum):
-    en = "en"
-    es = "es"
 
 
 LangOptions = typer.Option("en", "--lang", help="Language for the documentation")
@@ -25,7 +19,7 @@ LangOptions = typer.Option("en", "--lang", help="Language for the documentation"
 @handle_cli_errors
 def commit(
     auto: bool = typer.Option(False, help="Automate create commit"),
-    lang: LangType = LangOptions
+    lang: Lang = LangOptions
 ):
     use_case = GenerateCommitMessage(
         llm_provider=container.get_llm_provider(),
@@ -46,7 +40,7 @@ def pr_docs(
     branch_from: str = typer.Option(None, "--from", help="Source branch for the PR"),
     branch_to: str = typer.Option(None, "--to", help="Target branch for the PR"),
     pr_number: int = typer.Option(None, "--pr", help="PR number to update"),
-    lang: LangType = LangOptions
+    lang: Lang = LangOptions
 ):
     """
     Generates or updates pull request documentation.
@@ -54,7 +48,10 @@ def pr_docs(
     Use --from and --to to generate a new PR doc,
     or use --pr to update an existing one.
     """
-    use_case = GeneratePullRequestDocs(container.get_llm_provider())
+    use_case = GeneratePullRequestDocs(
+        llm_provider=container.get_llm_provider(),
+        git_provider=container.get_git_provier()
+    )
 
     if pr_number:
         result = use_case.execute(pr_number=pr_number, lang=lang)

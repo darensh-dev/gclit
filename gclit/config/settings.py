@@ -2,8 +2,10 @@
 
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import BaseModel, Field, TypeAdapter
+from pydantic import BaseModel, TypeAdapter
 import json
+
+from gclit.domain.models.common import Lang
 
 CONFIG_PATH = Path.home() / ".gclit" / "config.json"
 
@@ -20,10 +22,23 @@ class LocalSettings(BaseModel):
     endpoint: str = "http://localhost:11434"
 
 
-class ProvidersConfig(BaseModel):
+class GitHubSettings(BaseModel):
+    token: str = ""
+
+
+class AzureDevOpsSettings(BaseModel):
+    token: str = ""
+
+
+class LLmProvidersConfig(BaseModel):
     openai: OpenAISettings = OpenAISettings()
     claude: ClaudeSettings = ClaudeSettings()
     local: LocalSettings = LocalSettings()
+
+
+class GitProvidersConfig(BaseModel):
+    github: GitHubSettings = GitHubSettings()
+    azure_devops: AzureDevOpsSettings = AzureDevOpsSettings()
 
 
 class AppConfig(BaseSettings):
@@ -36,8 +51,9 @@ class AppConfig(BaseSettings):
 
     provider: str = "openai"
     model: str = "gpt-4o"
-    lang: str = "en"
-    providers: ProvidersConfig = ProvidersConfig()
+    lang: Lang = "en"
+    llm_provider: LLmProvidersConfig = LLmProvidersConfig()
+    git_provider: GitProvidersConfig = GitProvidersConfig()
 
     @classmethod
     def load(cls) -> "AppConfig":
@@ -79,6 +95,7 @@ class AppConfig(BaseSettings):
         # ⚠️ Retorna la instancia actualizada
         return updated
 
+
 def get_config_keys(config: BaseModel, prefix="") -> list[str]:
     keys = []
     for field, value in config.model_dump().items():
@@ -88,5 +105,6 @@ def get_config_keys(config: BaseModel, prefix="") -> list[str]:
         else:
             keys.append(full_key)
     return keys
+
 
 settings = AppConfig.load()
