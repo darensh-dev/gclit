@@ -79,5 +79,14 @@ class AppConfig(BaseSettings):
         # ⚠️ Retorna la instancia actualizada
         return updated
 
+def get_config_keys(config: BaseModel, prefix="") -> list[str]:
+    keys = []
+    for field, value in config.model_dump().items():
+        full_key = f"{prefix}.{field}" if prefix else field
+        if isinstance(value, dict):
+            keys.extend(get_config_keys(BaseModel.model_validate(value), prefix=full_key))
+        else:
+            keys.append(full_key)
+    return keys
 
 settings = AppConfig.load()

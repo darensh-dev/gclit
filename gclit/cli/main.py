@@ -1,5 +1,7 @@
 # gclit/cli/main.py
 
+from enum import Enum
+from typing import Literal
 import typer
 from gclit.container import container
 from gclit.application.use_cases.generate_commit import GenerateCommitMessage
@@ -10,8 +12,19 @@ app = typer.Typer()
 app.add_typer(config_app, name="config")
 
 
+class LangType(str, Enum):
+    en = "en"
+    es = "es"
+
+
+LangOptions = typer.Option("en", "--lang", help="Language for the documentation")
+
+
 @app.command()
-def commit(lang: str = "en", auto: bool = False):
+def commit(
+    auto: bool = typer.Option(False, help="Automate create commit"),
+    lang: LangType = LangOptions
+):
     use_case = GenerateCommitMessage(container.get_llm_provider())
     message = use_case.execute(lang)
     typer.echo(f"\n🔤 Generated commit message:\n\n{message}\n")
@@ -27,7 +40,7 @@ def pr_docs(
     branch_from: str = typer.Option(None, "--from", help="Source branch for the PR"),
     branch_to: str = typer.Option(None, "--to", help="Target branch for the PR"),
     pr_number: int = typer.Option(None, "--pr", help="PR number to update"),
-    lang: str = typer.Option("en", "--lang", help="Language for the documentation")
+    lang: LangType = LangOptions
 ):
     """
     Generates or updates pull request documentation.

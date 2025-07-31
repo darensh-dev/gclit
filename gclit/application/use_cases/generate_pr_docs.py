@@ -2,11 +2,11 @@
 
 from gclit.domain.ports.llm import LLMProvider
 from gclit.domain.models.pull_request import PullRequestContext
-from gclit.domain.ports.git_port import GitRepository
+from gclit.domain.ports.git_port import GitPort
 
 
 class GeneratePullRequestDocs:
-    def __init__(self, llm_provider: LLMProvider, git_repo: GitRepository):
+    def __init__(self, llm_provider: LLMProvider, git_repo: GitPort):
         self.llm_provider = llm_provider
         self.git_repo = git_repo
 
