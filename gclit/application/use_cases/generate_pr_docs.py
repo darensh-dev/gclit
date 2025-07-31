@@ -7,18 +7,21 @@ from gclit.domain.ports.git import GitProvider
 
 
 class GeneratePullRequestDocs:
-    def __init__(self, llm_provider: LLMProvider, git_repo: GitProvider):
+    def __init__(self, llm_provider: LLMProvider, git_provider: GitProvider):
         self.llm_provider = llm_provider
-        self.git_repo = git_repo
+        self.git_provider = git_provider
 
     def execute(self, branch_from: str = None, branch_to: str = None, pr_number: int = None, lang: Lang = "en") -> dict:
         if pr_number is not None:
-            pr_data = self.git_repo.get_pull_request_data(pr_number)
+            pr_data = self.git_provider.get_pr_diff_by_number(pr_number)
             branch_from = pr_data.branch_from
             branch_to = pr_data.branch_to
 
-        diff = self.git_repo.get_diff(branch_from, branch_to)
-
+        diff = self.git_provider.get_branch_diff(branch_from, branch_to)
+        
+        if not diff:
+            return None
+        
         context = PullRequestContext(
             diff=diff,
             branch_from=branch_from,
@@ -29,7 +32,14 @@ class GeneratePullRequestDocs:
         result = self.llm_provider.generate_pr_documentation(context)
 
         if pr_number is not None:
-            self.git_repo.update_pull_request(pr_number, title=result["title"], body=result["body"])
+            self.git_provider.update_pr(pr_number, title=result["title"], body=result["body"])
+        else:
+            self.git_provider.create_pr(
+                branch_from=branch_from,
+                branch_to=branch_to,
+                title=result["title"],
+                body=result["body"]
+            )
 
         return {
             "title": result["title"],
