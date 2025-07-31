@@ -10,7 +10,8 @@ dependencies = [
     "openai",
     "pydantic",
     "python-dotenv",
-    "pydantic-settings"
+    "pydantic-settings",
+    "requests",
 ]
 requires-python = ">=3.8"
 

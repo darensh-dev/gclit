@@ -1,3 +1,5 @@
+requests
+
 # CLI y argumentos
 typer[all]
 
