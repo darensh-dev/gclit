@@ -1,15 +1,16 @@
 # domain/services/git_port.py
 from abc import ABC, abstractmethod
 
+
 class GitProvider(ABC):
     @abstractmethod
     def get_stash_diff(self) -> str:
         pass
-    
+
     @abstractmethod
     def get_branch_name(self) -> str:
         pass
-    
+
     @abstractmethod
     def get_branch_diff(self, from_branch: str, to_branch: str) -> str:
         pass

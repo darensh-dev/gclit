@@ -4,6 +4,7 @@ import requests
 from gclit.domain.models.pull_request import PullRequestInfo
 from gclit.infrastructure.git.base_git_adapter import BaseGitAdapter
 
+
 class AzureDevOpsAdapter(BaseGitAdapter):
     def __init__(self, token: str, organization: str, project: str, repo: str):
         self.token = token
@@ -22,12 +23,7 @@ class AzureDevOpsAdapter(BaseGitAdapter):
         import base64
         return base64.b64encode(f":{self.token}".encode()).decode()
 
-    def get_diff(self, branch_from: str, branch_to: str) -> str:
-        import subprocess
-        result = subprocess.run(["git", "diff", f"{branch_to}..{branch_from}"], capture_output=True, text=True)
-        return result.stdout
-
-    def get_pull_request_data(self, pr_number: int) -> PullRequestInfo:
+    def get_pr_diff_by_number(self, pr_number: int) -> PullRequestInfo:
         res = requests.get(
             f"{self.api_url}/pullrequests/{pr_number}?api-version=7.1-preview.1",
             headers=self._headers()
@@ -40,14 +36,14 @@ class AzureDevOpsAdapter(BaseGitAdapter):
             branch_to=data["targetRefName"].replace("refs/heads/", "")
         )
 
-    def update_pull_request(self, pr_number: int, title: str, body: str) -> None:
+    def update_pr(self, pr_number: int, title: str, body: str) -> None:
         requests.patch(
             f"{self.api_url}/pullrequests/{pr_number}?api-version=7.1-preview.1",
             headers=self._headers(),
             json={"title": title, "description": body}
         ).raise_for_status()
 
-    def create_pull_request(self, from_branch: str, to_branch: str, title: str, body: str) -> str:
+    def create_pr(self, from_branch: str, to_branch: str, title: str, body: str) -> str:
         res = requests.post(
             f"{self.api_url}/pullrequests?api-version=7.1-preview.1",
             headers=self._headers(),
