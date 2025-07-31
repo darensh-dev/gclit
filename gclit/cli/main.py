@@ -1,12 +1,13 @@
 # gclit/cli/main.py
 
 from enum import Enum
-from typing import Literal
 import typer
+from gclit.cli.utils import handle_cli_errors
 from gclit.container import container
 from gclit.application.use_cases.generate_commit import GenerateCommitMessage
 from gclit.application.use_cases.generate_pr_docs import GeneratePullRequestDocs
 from gclit.cli.commands_config import config_app
+from gclit.domain.exceptions.exception import GclitException
 
 app = typer.Typer()
 app.add_typer(config_app, name="config")
@@ -21,11 +22,15 @@ LangOptions = typer.Option("en", "--lang", help="Language for the documentation"
 
 
 @app.command()
+@handle_cli_errors
 def commit(
     auto: bool = typer.Option(False, help="Automate create commit"),
     lang: LangType = LangOptions
 ):
-    use_case = GenerateCommitMessage(container.get_llm_provider())
+    use_case = GenerateCommitMessage(
+        llm_provider=container.get_llm_provider(),
+        git_provider=container.get_git_provier()
+    )
     message = use_case.execute(lang)
     typer.echo(f"\n🔤 Generated commit message:\n\n{message}\n")
 
@@ -36,6 +41,7 @@ def commit(
 
 
 @app.command("pr")
+@handle_cli_errors
 def pr_docs(
     branch_from: str = typer.Option(None, "--from", help="Source branch for the PR"),
     branch_to: str = typer.Option(None, "--to", help="Target branch for the PR"),

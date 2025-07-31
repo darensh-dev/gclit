@@ -5,18 +5,18 @@ from gclit.domain.ports.git import GitProvider
 from gclit.domain.ports.llm import LLMProvider
 
 class GenerateCommitMessage:
-    def __init__(self, llm_provider: LLMProvider, git_provide: GitProvider):
+    def __init__(self, llm_provider: LLMProvider, git_provider: GitProvider):
         self.llm_provider = llm_provider
-        self.git_provide = git_provide
+        self.git_provider = git_provider
 
     def execute(self, lang: str = "en") -> str:
-        diff = self.git_provide.get_diff()
+        diff = self.git_provider.get_stash_diff()
         if not diff:
             return "No staged changes to generate commit message."
 
         context = CommitContext(
             diff=diff,
-            branch_name=self._get_branch_name(),
+            branch_name=self.git_provider.get_branch_name(),
             lang=lang
         )
 
