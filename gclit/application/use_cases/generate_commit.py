@@ -4,6 +4,7 @@ from gclit.domain.models.commit_message import CommitContext
 from gclit.domain.ports.git import GitProvider
 from gclit.domain.ports.llm import LLMProvider
 
+
 class GenerateCommitMessage:
     def __init__(self, llm_provider: LLMProvider, git_provider: GitProvider):
         self.llm_provider = llm_provider
