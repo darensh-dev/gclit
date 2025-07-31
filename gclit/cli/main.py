@@ -56,7 +56,7 @@ def pr_docs(
     if pr_number:
         result = use_case.execute(pr_number=pr_number, lang=lang)
     elif branch_from and branch_to:
-        result = use_case.execute(branch_from=branch_from, branch_to=branch_to, lang=lang)
+        result = use_case.execute(from_branch=branch_from, to_branch=branch_to, lang=lang)
     else:
         typer.echo("❌ Must provide either --from/--to or --pr.")
         raise typer.Exit(code=1)

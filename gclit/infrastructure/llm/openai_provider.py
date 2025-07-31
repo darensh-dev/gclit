@@ -31,7 +31,7 @@ class OpenAIProvider(LLMProvider):
 
         prompt = (
             f"Generate a pull request title and markdown description in language '{context.lang}'.\n"
-            f"Changes from branch `{context.branch_from}` to `{context.branch_to}`:\n\n"
+            f"Changes from branch `{context.from_branch}` to `{context.to_branch}`:\n\n"
             f"{context.diff}"
         )
 

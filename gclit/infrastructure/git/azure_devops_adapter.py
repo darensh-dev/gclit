@@ -32,8 +32,8 @@ class AzureDevOpsAdapter(BaseGitAdapter):
         data = res.json()
         return PullRequestInfo(
             pr_number=pr_number,
-            branch_from=data["sourceRefName"].replace("refs/heads/", ""),
-            branch_to=data["targetRefName"].replace("refs/heads/", "")
+            from_branch=data["sourceRefName"].replace("refs/heads/", ""),
+            to_branch=data["targetRefName"].replace("refs/heads/", "")
         )
 
     def update_pr(self, pr_number: int, title: str, body: str) -> None:

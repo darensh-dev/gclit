@@ -1,6 +1,8 @@
 # domain/services/git_port.py
 from abc import ABC, abstractmethod
 
+from gclit.domain.models.pull_request import PullRequestInfo
+
 
 class GitProvider(ABC):
     @abstractmethod
@@ -16,7 +18,7 @@ class GitProvider(ABC):
         pass
 
     @abstractmethod
-    def get_pr_diff_by_number(self, pr_number: int) -> str:
+    def get_pr_diff_by_number(self, pr_number: int) -> PullRequestInfo:
         pass
 
     @abstractmethod
@@ -28,5 +30,3 @@ class GitProvider(ABC):
         """Returns PR URL or ID"""
         pass
 
-
-# pr --from develop --to main

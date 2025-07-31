@@ -1,6 +1,7 @@
 # gclit/infrastructure/git/github_adapter.py
 
 import requests
+from gclit.domain.exceptions.exception import GitProviderException
 from gclit.domain.models.pull_request import PullRequestInfo
 from gclit.infrastructure.git.base_git_adapter import BaseGitAdapter
 
@@ -21,8 +22,8 @@ class GitHubAdapter(BaseGitAdapter):
         data = res.json()
         return PullRequestInfo(
             pr_number=pr_number,
-            branch_from=data["head"]["ref"],
-            branch_to=data["base"]["ref"]
+            from_branch=data["head"]["ref"],
+            to_branch=data["base"]["ref"]
         )
 
     def update_pr(self, pr_number: int, title: str, body: str) -> None:
@@ -38,5 +39,11 @@ class GitHubAdapter(BaseGitAdapter):
             headers=self._headers(),
             json={"head": from_branch, "base": to_branch, "title": title, "body": body}
         )
+        
+        if res.status_code == 404:
+            raise GitProviderException(f"Repositorio '{self.repo}' no encontrado o sin acceso.")
+        elif res.status_code == 403:
+            raise GitProviderException("Token de GitHub inválido o sin permisos suficientes.")
+        
         res.raise_for_status()
         return res.json()["html_url"]

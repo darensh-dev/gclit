@@ -23,20 +23,21 @@ class Container:
             if provider == "openai":
                 self._llm_provider = OpenAIProvider(
                     model=settings.model,
-                    api_key=settings.llm_provider.openai.api_key
+                    api_key=settings.openai.api_key
                 )
 
             else:
                 raise LLMProviderException(f"Unsupported LLM provider: {provider}")
         return self._llm_provider
 
-    def get_git_provier(token: str) -> LLMProvider:
+    def get_git_provier(self) -> LLMProvider:
         result = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True)
         url = result.stdout.strip()
-
         if "github.com" in url:
             # Soporta formatos SSH y HTTPS
+            token = settings.github.token
             match = re.search(r"(github\.com[:/])(.+?)(\.git)?$", url)
+
             if not match:
                 raise GitProviderException("No se pudo extraer el repo de GitHub")
             repo = match.group(2)
@@ -44,6 +45,8 @@ class Container:
 
         elif "dev.azure.com" in url:
             match = re.search(r"dev\.azure\.com/([^/]+)/([^/]+)/_git/([^/]+)", url)
+            token = settings.azure_devops.token
+
             if not match:
                 raise GitProviderException("No se pudo extraer info de Azure DevOps")
             organization, project, repo = match.groups()

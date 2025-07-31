@@ -30,17 +30,6 @@ class AzureDevOpsSettings(BaseModel):
     token: str = ""
 
 
-class LLmProvidersConfig(BaseModel):
-    openai: OpenAISettings = OpenAISettings()
-    claude: ClaudeSettings = ClaudeSettings()
-    local: LocalSettings = LocalSettings()
-
-
-class GitProvidersConfig(BaseModel):
-    github: GitHubSettings = GitHubSettings()
-    azure_devops: AzureDevOpsSettings = AzureDevOpsSettings()
-
-
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -52,8 +41,15 @@ class AppConfig(BaseSettings):
     provider: str = "openai"
     model: str = "gpt-4o"
     lang: Lang = "en"
-    llm_provider: LLmProvidersConfig = LLmProvidersConfig()
-    git_provider: GitProvidersConfig = GitProvidersConfig()
+
+    # Git providers
+    github: GitHubSettings = GitHubSettings()
+    azure_devops: AzureDevOpsSettings = AzureDevOpsSettings()
+
+    # LLMs providers
+    openai: OpenAISettings = OpenAISettings()
+    claude: ClaudeSettings = ClaudeSettings()
+    local: LocalSettings = LocalSettings()
 
     @classmethod
     def load(cls) -> "AppConfig":
@@ -65,7 +61,7 @@ class AppConfig(BaseSettings):
             # return cls(**file_config)
             return TypeAdapter(cls).validate_python(file_config)
         else:
-            env_config.save()
+            # env_config.save()
             return env_config
 
     def save(self):
@@ -74,10 +70,8 @@ class AppConfig(BaseSettings):
             json.dump(self.model_dump(), f, indent=2)
 
     def update(self, key: str, value: str):
-        # Dump actual config a dict
         current_data = self.model_dump()
 
-        # 🔧 Modificar el dict (anidado si es necesario)
         ref = current_data
         parts = key.split(".")
         for part in parts[:-1]:
@@ -86,7 +80,6 @@ class AppConfig(BaseSettings):
             ref = ref[part]
         ref[parts[-1]] = value
 
-        # 🔄 Revalidar todo el config con tipado correcto
         updated = TypeAdapter(AppConfig).validate_python(current_data)
 
         # Guardar y reemplazar atributos

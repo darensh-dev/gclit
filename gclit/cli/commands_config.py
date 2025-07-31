@@ -9,19 +9,19 @@ def key_autocomplete(ctx: typer.Context, args: list[str], incomplete: str):
     all_keys = get_config_keys(config)
     return [k for k in all_keys if k.startswith(incomplete)]
 
-
+# autocompletion=key_autocomplete
 @config_app.command("set")
 def config_set(
-    key: str = typer.Argument(..., autocompletion=key_autocomplete),
+    key: str = typer.Argument(...),
     value: str = typer.Argument(...),
 ):
     """Actualiza una clave de configuración"""
     config = AppConfig.load()
-    all_keys = get_config_keys(config)
+    # all_keys = get_config_keys(config)
 
-    if key not in all_keys:
-        typer.echo(f"❌ Clave inválida. Opciones disponibles: {', '.join(all_keys)}")
-        raise typer.Exit(1)
+    # if key not in all_keys:
+    #     typer.echo(f"❌ Clave inválida. Opciones disponibles: {', '.join(all_keys)}")
+    #     raise typer.Exit(1)
 
     try:
         config.update(key, value)
