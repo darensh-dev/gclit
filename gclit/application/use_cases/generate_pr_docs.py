@@ -20,9 +20,9 @@ class GeneratePullRequestDocs:
 
         diff = self.git_provider.get_branch_diff(from_branch, to_branch)
 
-        # if not diff:
-        #     # TODO: estructurar respuesta
-        #     return None
+        if not diff:
+            # TODO: estructurar respuesta
+            return None
 
         context = PullRequestContext(
             diff=diff,
@@ -31,11 +31,8 @@ class GeneratePullRequestDocs:
             lang=lang
         )
 
-        # result = self.llm_provider.generate_pr_documentation(context)
-        result = {
-            "title": "pr de tst",
-            "body": "pr de tst",
-        }
+        result = self.llm_provider.generate_pr_documentation(context)
+
         if pr_number is not None:
             self.git_provider.update_pr(pr_number, title=result["title"], body=result["body"])
         else:
