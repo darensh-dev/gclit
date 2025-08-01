@@ -42,8 +42,8 @@ class OpenAIProvider(LLMProvider):
             Use the appropriate tone for a professional engineering team (avoid generic titles like "Pull Request Title").
 
             ### Context:
-            - Branch: {context.branch_name}
             - Language: {context.lang}
+            - Changes from branch `{context.from_branch}` to `{context.to_branch}`:
 
             ### Diff:
             {context.diff}
