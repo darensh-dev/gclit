@@ -32,3 +32,6 @@ pytest_cache/
 dist/
 build/
 *.egg-info/
+
+project_context*
+.contextignore*

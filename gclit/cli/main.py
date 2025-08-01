@@ -1,12 +1,15 @@
 # gclit/cli/main.py
 
 import typer
-from gclit.cli.utils import handle_cli_errors
+
+from gclit.domain.models.common import Lang
 from gclit.container import container
+from gclit.cli.utils import handle_cli_errors
+
 from gclit.application.use_cases.generate_commit import GenerateCommitMessage
 from gclit.application.use_cases.generate_pr_docs import GeneratePullRequestDocs
-from gclit.cli.commands_config import config_app
-from gclit.domain.models.common import Lang
+
+from gclit.cli.config import config_app
 
 app = typer.Typer()
 app.add_typer(config_app, name="config")
