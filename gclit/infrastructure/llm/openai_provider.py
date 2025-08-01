@@ -12,13 +12,26 @@ class OpenAIProvider(LLMProvider):
 
     def generate_commit_message(self, context: CommitContext) -> str:
 
-        prompt = (
-            f"You are a helpful assistant. Generate a concise Git commit message "
-            f"based on the following diff (language: {context.lang}).\n"
-            f"Branch: {context.branch_name}\n\n"
-            f"{context.diff}\n"
-        )
+        prompt = f"""
+        You are an expert Git assistant.
 
+        Analyze the following Git diff and generate:
+        1. A clear, concise, and specific Pull Request **title** (max 12 words), summarizing the main change or purpose.
+        2. A Pull Request **description** in markdown with:
+        - A short summary in plain English.
+        - A list of the most important changes (avoid noise like formatting or comments).
+        - Optional: include the motivation or context if the change addresses a specific problem or feature.
+
+        Use the appropriate tone for a professional engineering team (avoid generic titles like "Pull Request Title").
+
+        ### Context:
+        - Branch: {context.branch_name}
+        - Language: {context.lang}
+
+        ### Diff:
+        {context.diff}
+        """
+        
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
