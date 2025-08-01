@@ -33,5 +33,5 @@ dist/
 build/
 *.egg-info/
 
-.project_context*
+project_context*
 .contextignore*
