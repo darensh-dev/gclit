@@ -29,11 +29,25 @@ class OpenAIProvider(LLMProvider):
 
     def generate_pr_documentation(self, context: PullRequestContext) -> dict:
 
-        prompt = (
-            f"Generate a pull request title and markdown description in language '{context.lang}'.\n"
-            f"Changes from branch `{context.from_branch}` to `{context.to_branch}`:\n\n"
-            f"{context.diff}"
-        )
+        prompt = f"""
+            You are an expert Git assistant.
+
+            Analyze the following Git diff and generate:
+            1. A clear, concise, and specific Pull Request **title** (max 12 words), summarizing the main change or purpose.
+            2. A Pull Request **description** in markdown with:
+            - A short summary in plain English.
+            - A list of the most important changes (avoid noise like formatting or comments).
+            - Optional: include the motivation or context if the change addresses a specific problem or feature.
+
+            Use the appropriate tone for a professional engineering team (avoid generic titles like "Pull Request Title").
+
+            ### Context:
+            - Language: {context.lang}
+            - Changes from branch `{context.from_branch}` to `{context.to_branch}`:
+
+            ### Diff:
+            {context.diff}
+        """
 
         response = self.client.chat.completions.create(
             model=self.model,
