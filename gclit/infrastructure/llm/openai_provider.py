@@ -16,7 +16,7 @@ class OpenAIProvider(LLMProvider):
             "en": {
                 "system": "You are an expert Git commit message generator. Create concise, descriptive commit messages following conventional commits format when appropriate.",
                 "instructions": "Generate a Git commit message based on the provided information",
-                "diff_label": "Code changes",
+                "diff_label": "All code changes",
                 "branch_label": "Branch",
                 "history_label": "Recent commit history for context",
                 "guidelines": """
@@ -27,15 +27,16 @@ class OpenAIProvider(LLMProvider):
                     - Be specific about what changed
                     - Consider the branch name and commit history for context
                     - Focus on the 'why' and 'what', not the 'how'
-                    - Return ONLY the commit message text, without any markdown formatting, code blocks
+                    - Return ONLY the commit message text, without any markdown formatting
+                    - Provide just the plain text commit message, code blocks
                     - Do not wrap the response in backticks or code blocks
-                    - Provide just the plain text commit message
                 """
+                # - returns the text without ``` and without code type like ```plaintext, bash etc.
             },
             "es": {
                 "system": "Eres un experto generador de mensajes de commit de Git. Crea mensajes de commit concisos y descriptivos siguiendo el formato de commits convencionales cuando sea apropiado.",
                 "instructions": "Genera un mensaje de commit de Git basado en la información proporcionada",
-                "diff_label": "Cambios en el código",
+                "diff_label": "Todos cambios en el código",
                 "branch_label": "Rama",
                 "history_label": "Historial de commits recientes para contexto",
                 "guidelines": """
@@ -47,9 +48,10 @@ class OpenAIProvider(LLMProvider):
                     - Considera el nombre de la rama y el historial de commits para contexto
                     - Enfócate en el 'por qué' y 'qué', no en el 'cómo'
                     - Devuelve SOLO el texto del mensaje de confirmación, sin formato Markdown, bloques de código.
-                    - No encierre la respuesta entre comillas invertidas ni bloques de código.
                     - Proporciona solo el texto sin formato del mensaje de confirmación.
+                    - No encierre la respuesta entre comillas invertidas ni bloques de código.
                 """
+                # - devuelve el texto sin ``` y sin tipo de codigo como ```plaintext, bash etc.
             }
         }
 
@@ -114,7 +116,7 @@ class OpenAIProvider(LLMProvider):
             ### Git Diff:
             {context.diff}
 
-            Please respond with:
+            Please respond EXACTLY in the following format (do not change the headers):
             **Title:** [your specific, actionable title here]
 
             **Description:**
@@ -136,9 +138,9 @@ class OpenAIProvider(LLMProvider):
 
         in_description = False
         for line in lines:
-            if line.startswith('**Title:**'):
-                title = line.replace('**Title:**', '').strip()
-            elif line.startswith('**Description:**'):
+            if line.lower().startswith('**title:**') or line.lower().startswith('### title:'):
+                title = line.split(':', 1)[1].strip()
+            elif line.lower().startswith('**description:**') or line.lower().startswith('### description:'):
                 in_description = True
             elif in_description:
                 body_lines.append(line)

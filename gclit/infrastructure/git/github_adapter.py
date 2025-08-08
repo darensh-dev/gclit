@@ -42,6 +42,22 @@ class GitHubAdapter(BaseGitAdapter):
         except RequestException as e:
             raise GitProviderException(f"{context} - Error de red al conectar con GitHub.") from e
 
+    def _find_existing_pr(self, from_branch: str, to_branch: str) -> Optional[int]:
+        """Verifica si ya hay un PR abierto desde from_branch a to_branch"""
+        url = f"{self.api_url}/pulls"
+        owner = self.repo.split("/")[0]
+        params = {
+            "state": "open",
+            "head": f"{owner}:{from_branch}",
+            "base": to_branch
+        }
+        res = requests.get(url, headers=self._headers(), params=params)
+        self._handle_http_error(res, "Al buscar PR existente")
+        prs = res.json()
+        if prs:
+            return prs[0]["number"]
+        return None
+
     def get_pr_diff_by_number(self, pr_number: int) -> PullRequestInfo:
         url = f"{self.api_url}/pulls/{pr_number}"
         res = requests.get(url, headers=self._headers())
@@ -59,7 +75,7 @@ class GitHubAdapter(BaseGitAdapter):
         self._handle_http_error(res, f"Al actualizar PR #{pr_number}")
 
     def create_pr(self, from_branch: str, to_branch: str, title: str, body: str) -> str:
-        existing_pr = self.find_existing_pr(from_branch, to_branch)
+        existing_pr = self._find_existing_pr(from_branch, to_branch)
         if existing_pr:
             raise GitProviderException(
                 f"Ya existe un Pull Request abierto de `{from_branch}` hacia `{to_branch}` (PR #{existing_pr}).\n"
@@ -73,19 +89,3 @@ class GitHubAdapter(BaseGitAdapter):
         )
         self._handle_http_error(res, f"Al crear PR de `{from_branch}` a `{to_branch}`")
         return res.json()["html_url"]
-
-    def find_existing_pr(self, from_branch: str, to_branch: str) -> Optional[int]:
-        """Verifica si ya hay un PR abierto desde from_branch a to_branch"""
-        url = f"{self.api_url}/pulls"
-        owner = self.repo.split("/")[0]
-        params = {
-            "state": "open",
-            "head": f"{owner}:{from_branch}",
-            "base": to_branch
-        }
-        res = requests.get(url, headers=self._headers(), params=params)
-        self._handle_http_error(res, "Al buscar PR existente")
-        prs = res.json()
-        if prs:
-            return prs[0]["number"]
-        return None

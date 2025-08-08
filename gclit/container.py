@@ -11,6 +11,7 @@ from gclit.domain.ports.llm import LLMProvider
 from gclit.infrastructure.llm.openai_provider import OpenAIProvider
 from gclit.infrastructure.git.github_adapter import GitHubAdapter
 from gclit.infrastructure.git.azure_devops_adapter import AzureDevOpsAdapter
+from gclit.infrastructure.llm.openai_with_func_provider import OpenAIWithFuncProvider
 
 
 class Container:
@@ -22,6 +23,12 @@ class Container:
             provider = settings.provider.lower()
             if provider == "openai":
                 self._llm_provider = OpenAIProvider(
+                    model=settings.model,
+                    api_key=settings.openai.api_key
+                )
+
+            elif provider == "openai-with-func":
+                self._llm_provider = OpenAIWithFuncProvider(
                     model=settings.model,
                     api_key=settings.openai.api_key
                 )
