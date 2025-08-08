@@ -12,18 +12,78 @@ class OpenAIProvider(LLMProvider):
         self.client = openai.OpenAI(api_key=self.api_key)
 
     def generate_commit_message(self, context: CommitContext) -> str:
+        lang_prompts = {
+            "en": {
+                "system": "You are an expert Git commit message generator. Create concise, descriptive commit messages following conventional commits format when appropriate.",
+                "instructions": "Generate a Git commit message based on the provided information",
+                "diff_label": "Code changes",
+                "branch_label": "Branch",
+                "history_label": "Recent commit history for context",
+                "guidelines": """
+                    Guidelines:
+                    - Use imperative mood (e.g., "Add", "Fix", "Update", not "Added", "Fixed", "Updated")
+                    - Keep the subject line under 72 characters
+                    - Use conventional commits format when appropriate (feat:, fix:, docs:, style:, refactor:, test:, chore:)
+                    - Be specific about what changed
+                    - Consider the branch name and commit history for context
+                    - Focus on the 'why' and 'what', not the 'how'
+                    - Return ONLY the commit message text, without any markdown formatting, code blocks, or bullet points
+                    - Do not wrap the response in backticks or code blocks
+                    - Provide just the plain text commit message
+                """
+            },
+            "es": {
+                "system": "Eres un experto generador de mensajes de commit de Git. Crea mensajes de commit concisos y descriptivos siguiendo el formato de commits convencionales cuando sea apropiado.",
+                "instructions": "Genera un mensaje de commit de Git basado en la información proporcionada",
+                "diff_label": "Cambios en el código",
+                "branch_label": "Rama",
+                "history_label": "Historial de commits recientes para contexto",
+                "guidelines": """
+                    Pautas:
+                    - Usa modo imperativo (ej: "Agregar", "Corregir", "Actualizar", no "Agregado", "Corregido", "Actualizado")
+                    - Mantén la línea de asunto bajo 72 caracteres
+                    - Usa formato de commits convencionales cuando sea apropiado (feat:, fix:, docs:, style:, refactor:, test:, chore:)
+                    - Sé específico sobre lo que cambió
+                    - Considera el nombre de la rama y el historial de commits para contexto
+                    - Enfócate en el 'por qué' y 'qué', no en el 'cómo'
+                    - Devuelve SOLO el texto del mensaje de confirmación, sin formato Markdown, bloques de código ni viñetas.
+                    - No encierre la respuesta entre comillas invertidas ni bloques de código.
+                    - Proporciona solo el texto sin formato del mensaje de confirmación.
+                """
+            }
+        }
 
-        prompt = (
-            f"You are a helpful assistant. Generate a concise Git commit message "
-            f"based on the following diff (language: {context.lang}).\n"
-            f"Branch: {context.branch_name}\n\n"
-            f"{context.diff}\n"
-        )
+        texts = lang_prompts.get(context.lang, lang_prompts["en"])
+
+        prompt_parts = [
+            texts["instructions"] + ":\n",
+            f"**{texts['branch_label']}:** {context.branch_name}",
+        ]
+
+        if context.commit_history:
+            prompt_parts.append(f"**{texts['history_label']}:**")
+            prompt_parts.append(context.commit_history)
+            prompt_parts.append("")
+
+        prompt_parts.extend([
+            f"**{texts['diff_label']}:**",
+            "```diff",
+            context.diff,
+            "```",
+            "",
+            texts["guidelines"]
+        ])
+
+        prompt = "\n".join(prompt_parts)
 
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": texts["system"]},
+                {"role": "user", "content": prompt}
+            ],
             temperature=0.3,
+            max_tokens=150,
         )
 
         return response.choices[0].message.content.strip()
