@@ -13,7 +13,7 @@ commit_app = typer.Typer()
 
 @commit_app.command()
 @handle_cli_errors
-def commit(
+def generate(
     auto: bool = typer.Option(False, "--auto", help="Automatically create commit without confirmation"),
     lang: Lang = LangOptions
 ):
