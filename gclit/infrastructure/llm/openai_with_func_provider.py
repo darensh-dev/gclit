@@ -109,11 +109,8 @@ class OpenAIWithFuncProvider(LLMProvider):
             return commit_response.message
 
         except ValidationError as e:
-            # Fallback en caso de error de validación
-            print(f"Validation error: {e}")
             return self._fallback_commit_message(context)
         except Exception as e:
-            print(f"Error generating commit message: {e}")
             return self._fallback_commit_message(context)
 
     def generate_pr_documentation(self, context: PullRequestContext) -> dict:
@@ -190,10 +187,8 @@ class OpenAIWithFuncProvider(LLMProvider):
             }
 
         except ValidationError as e:
-            print(f"Validation error: {e}")
             return self._fallback_pr_documentation(context)
         except Exception as e:
-            print(f"Error generating PR documentation: {e}")
             return self._fallback_pr_documentation(context)
 
     def _fallback_commit_message(self, context: CommitContext) -> str:
