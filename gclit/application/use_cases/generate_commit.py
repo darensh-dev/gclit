@@ -1,6 +1,7 @@
 # gclit/application/use_cases/generate_commit.py
 
 from typing import Any, Dict
+from gclit.domain.exceptions.exception import GitProviderException
 from gclit.domain.models.commit_message import CommitContext
 from gclit.domain.models.common import Lang
 from gclit.domain.ports.git import GitProvider
@@ -18,7 +19,7 @@ class GenerateCommitMessage:
         """
         diff = self.git_provider.get_stash_diff()
         if not diff:
-            return "No staged changes to generate commit message."
+            raise GitProviderException("No staged changes to generate commit message.")
 
         commit_history = self.git_provider.get_recent_commits(limit=5)
 

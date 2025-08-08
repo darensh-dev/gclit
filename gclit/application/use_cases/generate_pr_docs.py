@@ -1,4 +1,5 @@
 # gclit/application/use_cases/generate_pr_docs.py
+from gclit.domain.exceptions.exception import GitProviderException
 from gclit.domain.models.common import Lang
 from gclit.domain.ports.llm import LLMProvider
 from gclit.domain.models.pull_request import PullRequestContext, PullRequestInfo
@@ -28,13 +29,13 @@ class GeneratePullRequestDocs:
             except Exception:
                 remote_available = False
                 if not from_branch or not to_branch:
-                    raise Exception("No se pudo obtener información del PR remoto y no se proporcionaron las ramas")
+                    raise GitProviderException("No se pudo obtener información del PR remoto y no se proporcionaron las ramas")
 
         try:
             diff = self.git_provider.get_branch_diff(from_branch, to_branch)
             if not diff:
                 return {"error": "No hay diferencias entre las ramas especificadas"}
-        except Exception as e:
+        except GitProviderException as e:
             if pr_number is not None:
                 return {"error": f"No se pudo obtener el diff: {str(e)}. Usa --from y --to para especificar ramas locales"}
             raise e
