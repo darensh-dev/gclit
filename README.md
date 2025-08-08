@@ -86,13 +86,13 @@ Generate a commit message for your staged changes:
 git add .
 
 ### Generate commit message
-gclit commit
+gclit commit generate
 
 ### Generate and auto-commit
-gclit commit --auto
+gclit commit generate --auto
 
 ### Generate in Spanish
-gclit commit --lang es
+gclit commit generate --lang es
 ```
 
 ### Generate Pull Request Documentation
@@ -101,20 +101,20 @@ Create a new PR
 
 ```bash
 # Generate PR from current branch to main
-gclit pr --from feature-branch --to main
+gclit pr generate --from feature-branch --to main
 
 ### Generate PR in Spanish
-gclit pr --from feature-branch --to main --lang es
+gclit pr generate --from feature-branch --to main --lang es
 ```
 
 Update existing PR
 
 ```bash
 # Update PR #123 with new documentation
-gclit pr --pr 123
+gclit pr generate --pr 123
 
 ### Update PR in Spanish
-gclit pr --pr 123 --lang es
+gclit pr generate --pr 123 --lang es
 ```
 
 # 🏗️ Architecture
@@ -166,14 +166,14 @@ git add .
 ### 2. Generate commit message:
 
 ```bash
-gclit commit --auto
+gclit commit generate --auto
 ```
 
 ### 3. Push and create PR:
 
 ```bash
 git push origin feature/user-authentication
-gclit pr --from feature/user-authentication --to main
+gclit pr generate --from feature/user-authentication --to main
 ```
 
 # Configuration Examples
@@ -201,9 +201,9 @@ gclit config set provider "openai"
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`gclit commit --auto`)
+3. Commit your changes (`gclit commit generate --auto`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Create a Pull Request (`gclit pr --from feature/amazing-feature --to main`)
+5. Create a Pull Request (`gclit pr generate --from feature/amazing-feature --to main`)
 
 # 📄 License
 
