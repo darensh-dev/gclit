@@ -34,4 +34,4 @@ class GenerateCommitMessage:
 
     def apply_commit(self, message: str) -> str:
         """Aplica un commit con el mensaje dado"""
-        return self.git_provider.create_commit(message.replace("```", ""))
+        return self.git_provider.create_commit(message)

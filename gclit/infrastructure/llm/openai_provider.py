@@ -27,7 +27,7 @@ class OpenAIProvider(LLMProvider):
                     - Be specific about what changed
                     - Consider the branch name and commit history for context
                     - Focus on the 'why' and 'what', not the 'how'
-                    - Return ONLY the commit message text, without any markdown formatting, code blocks, or bullet points
+                    - Return ONLY the commit message text, without any markdown formatting, code blocks
                     - Do not wrap the response in backticks or code blocks
                     - Provide just the plain text commit message
                 """
@@ -46,7 +46,7 @@ class OpenAIProvider(LLMProvider):
                     - Sé específico sobre lo que cambió
                     - Considera el nombre de la rama y el historial de commits para contexto
                     - Enfócate en el 'por qué' y 'qué', no en el 'cómo'
-                    - Devuelve SOLO el texto del mensaje de confirmación, sin formato Markdown, bloques de código ni viñetas.
+                    - Devuelve SOLO el texto del mensaje de confirmación, sin formato Markdown, bloques de código.
                     - No encierre la respuesta entre comillas invertidas ni bloques de código.
                     - Proporciona solo el texto sin formato del mensaje de confirmación.
                 """
