@@ -15,3 +15,12 @@ class BaseGitAdapter(GitProvider):
     def get_branch_diff(self, from_branch: str, to_branch: str) -> str:
         result = subprocess.run(["git", "diff", f"{to_branch}..{from_branch}"], capture_output=True, text=True)
         return result.stdout
+
+    def get_recent_commits(self, branch: str = None, limit: int = 5) -> str:
+        """Obtiene los últimos commits para contexto histórico"""
+        cmd = ["git", "log", f"-{limit}", "--oneline"]
+        if branch:
+            cmd.append(branch)
+        
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        return result.stdout.strip()
