@@ -1,7 +1,6 @@
 # gclit/cli/commands/commit.py
 
 import typer
-import subprocess
 from gclit.domain.models.common import Lang
 from gclit.container import container
 from gclit.cli.options.common import LangOptions
@@ -29,11 +28,11 @@ def generate(
     typer.echo()
 
     if auto:
-        subprocess.run(["git", "commit", "-m", message])
+        use_case.apply_commit(message)
         typer.secho("✅ Commit created automatically.", fg=typer.colors.GREEN)
     else:
         if typer.confirm("Do you want to create this commit?"):
-            subprocess.run(["git", "commit", "-m", message])
+            use_case.apply_commit(message)
             typer.secho("✅ Commit created.", fg=typer.colors.GREEN)
         else:
             typer.echo("❌ Commit cancelled.")

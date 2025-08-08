@@ -1,5 +1,6 @@
 # gclit/application/use_cases/generate_commit.py
 
+from typing import Any, Dict
 from gclit.domain.models.commit_message import CommitContext
 from gclit.domain.models.common import Lang
 from gclit.domain.ports.git import GitProvider
@@ -12,14 +13,25 @@ class GenerateCommitMessage:
         self.git_provider = git_provider
 
     def execute(self, lang: Lang = "en") -> str:
+        """
+        Genera un mensaje de commit y opcionalmente lo aplica
+        """
         diff = self.git_provider.get_stash_diff()
         if not diff:
             return "No staged changes to generate commit message."
 
+        commit_history = self.git_provider.get_recent_commits(limit=5)
+
         context = CommitContext(
             diff=diff,
             branch_name=self.git_provider.get_branch_name(),
-            lang=lang
+            commit_history=commit_history,
+            lang=lang,
         )
 
-        return self.llm_provider.generate_commit_message(context)
+        commit_message = self.llm_provider.generate_commit_message(context)
+        return commit_message
+
+    def apply_commit(self, message: str) -> str:
+        """Aplica un commit con el mensaje dado"""
+        return self.git_provider.create_commit(message.replace("```", ""))
