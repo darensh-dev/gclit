@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from gclit.domain.models.pull_request import PullRequestInfo
 
+
 class GitProvider(ABC):
     @abstractmethod
     def get_stash_diff(self) -> str:
@@ -29,5 +30,10 @@ class GitProvider(ABC):
 
     @abstractmethod
     def create_pr(self, from_branch: str, to_branch: str, title: str, body: str) -> str:
+        """Returns PR URL or ID"""
+        pass
+
+    @abstractmethod
+    def create_commit(self, from_branch: str, to_branch: str, title: str, body: str) -> str:
         """Returns PR URL or ID"""
         pass
