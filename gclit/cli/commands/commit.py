@@ -2,8 +2,9 @@
 
 import typer
 import subprocess
-from gclit.domain.models.common import Lang, LangOptions
+from gclit.domain.models.common import Lang
 from gclit.container import container
+from gclit.cli.options.common import LangOptions
 from gclit.cli.utils import handle_cli_errors
 from gclit.application.use_cases.generate_commit import GenerateCommitMessage
 
@@ -12,7 +13,7 @@ commit_app = typer.Typer()
 
 @commit_app.command()
 @handle_cli_errors
-def generate(
+def commit(
     auto: bool = typer.Option(False, "--auto", help="Automatically create commit without confirmation"),
     lang: Lang = LangOptions
 ):
