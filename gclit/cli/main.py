@@ -1,71 +1,30 @@
 # gclit/cli/main.py
-
 import typer
+from gclit.cli.commands.commit import register_commit_commands
+from gclit.cli.commands.pr import register_pr_commands
+from gclit.cli.commands.config import register_config_app
 
-from gclit.domain.models.common import Lang
-from gclit.container import container
-from gclit.cli.utils import handle_cli_errors
+app = typer.Typer(
+    name="gclit",
+    help="Git CLI assistant powered by LLMs",
+    no_args_is_help=True
+)
 
-from gclit.application.use_cases.generate_commit import GenerateCommitMessage
-from gclit.application.use_cases.generate_pr_docs import GeneratePullRequestDocs
-
-from gclit.cli.config import config_app
-
-app = typer.Typer()
-app.add_typer(config_app, name="config")
-
-
-LangOptions = typer.Option("en", "--lang", help="Language for the documentation")
+register_commit_commands(app)
+register_pr_commands(app)
+register_config_app(app)
 
 
-@app.command()
-@handle_cli_errors
-def commit(
-    auto: bool = typer.Option(False, help="Automate create commit"),
-    lang: Lang = LangOptions
-):
-    use_case = GenerateCommitMessage(
-        llm_provider=container.get_llm_provider(),
-        git_provider=container.get_git_provier()
-    )
-    message = use_case.execute(lang)
-    typer.echo(f"\n🔤 Generated commit message:\n\n{message}\n")
-
-    if auto:
-        import subprocess
-        subprocess.run(["git", "commit", "-m", message])
-        typer.echo("✅ Commit created.")
+@app.command("version")
+def version():
+    """Show gclit version"""
+    typer.echo("gclit version 0.1.0")
 
 
-@app.command("pr")
-@handle_cli_errors
-def pr_docs(
-    branch_from: str = typer.Option(None, "--from", help="Source branch for the PR"),
-    branch_to: str = typer.Option(None, "--to", help="Target branch for the PR"),
-    pr_number: int = typer.Option(None, "--pr", help="PR number to update"),
-    lang: Lang = LangOptions
-):
-    """
-    Generates or updates pull request documentation.
-
-    Use --from and --to to generate a new PR doc,
-    or use --pr to update an existing one.
-    """
-    use_case = GeneratePullRequestDocs(
-        llm_provider=container.get_llm_provider(),
-        git_provider=container.get_git_provier()
-    )
-
-    if pr_number:
-        result = use_case.execute(pr_number=pr_number, lang=lang)
-    elif branch_from and branch_to:
-        result = use_case.execute(from_branch=branch_from, to_branch=branch_to, lang=lang)
-    else:
-        typer.echo("❌ Must provide either --from/--to or --pr.")
-        raise typer.Exit(code=1)
-
-    typer.echo(f"\n📌 Title:\n{result['title']}\n\n📝 Description:\n{result['body']}\n")
+def main():
+    """Entry point for the CLI."""
+    app()
 
 
 if __name__ == "__main__":
-    app()
+    main()

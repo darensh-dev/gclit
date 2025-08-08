@@ -34,7 +34,7 @@ pip install -e .
 ### Install dependencies
 
 ```bash
-bashpip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 # ⚙️ Configuration
@@ -60,7 +60,7 @@ gclit config set model "gpt-4o-mini"
 ### View current configuration
 
 ```bash
-bashgclit config show
+gclit config show
 ```
 
 ### Environment Variables
@@ -215,7 +215,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 #### "Unsupported LLM provider" error:
 
-- Make sure you've set the correct provider: `gclit config set provider "openai`
+- Make sure you've set the correct provider: `gclit config set provider "openai"`
 
 #### "No staged changes" message:
 
