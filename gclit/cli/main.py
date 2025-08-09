@@ -6,8 +6,9 @@ from gclit.cli.commands.config import register_config_app
 
 app = typer.Typer(
     name="gclit",
-    help="Git CLI assistant powered by LLMs",
-    no_args_is_help=True
+    help="Git CLI assistant powered by LLMs for intelligent commit messages and pull request documentation.",
+    no_args_is_help=True,
+    add_completion=True,
 )
 
 register_commit_commands(app)
