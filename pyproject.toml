@@ -1,19 +1,101 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "gclit"
-version = "0.1.0"
-description = "Git CLI assistant powered by LLMs"
+version = "1.0.1"
+description = "Git CLI assistant powered by LLMs for intelligent commit messages and pull request documentation"
+readme = "README.md"
+license = {text = "MIT"}
 authors = [
     { name="Daren.dev", email="sdaren6@gmail.com" }
 ]
-dependencies = [
-    "typer[all]",
-    "openai",
-    "pydantic",
-    "python-dotenv",
-    "pydantic-settings",
-    "requests",
+maintainers = [
+    { name="Daren.dev", email="sdaren6@gmail.com" }
+]
+keywords = ["git", "cli", "ai", "llm", "commit", "pull-request", "openai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Tools",
+    "Topic :: Software Development :: Version Control :: Git",
 ]
 requires-python = ">=3.8"
+dependencies = [
+    "typer>=0.9.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "requests>=2.28.0",
+    "pygit2>=1.12.0",
+    "openai>=1.0.0",
+    "rich>=13.0.0",
+    "click>=8.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/darensh-dev/gclit"
+Documentation = "https://github.com/darensh-dev/gclit#readme"
+Repository = "https://github.com/darensh-dev/gclit.git"
+Issues = "https://github.com/darensh-dev/gclit/issues"
 
 [project.scripts]
 gclit = "gclit.cli.main:app"
+
+[tool.setuptools]
+packages = ["gclit"]
+
+[tool.setuptools.package-dir]
+gclit = "gclit"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
