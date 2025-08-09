@@ -12,6 +12,7 @@ from gclit.infrastructure.llm.openai_provider import OpenAIProvider
 from gclit.infrastructure.git.github_adapter import GitHubAdapter
 from gclit.infrastructure.git.azure_devops_adapter import AzureDevOpsAdapter
 from gclit.infrastructure.llm.openai_with_func_provider import OpenAIWithFuncProvider
+from gclit.infrastructure.git.ssh_resolver import get_enhanced_git_remote
 
 
 class Container:
@@ -37,35 +38,29 @@ class Container:
                 raise LLMProviderException(f"Unsupported LLM provider: {provider}")
         return self._llm_provider
 
-    def get_git_provier(self) -> LLMProvider:
-        result = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True)
-        url = result.stdout.strip()
-        if "github.com" in url:
-            # Soporta formatos SSH y HTTPS
-            token = settings.github.token
-            match = re.search(r"(github\.com[:/])(.+?)(\.git)?$", url)
+    def get_git_provier(self) -> GitProvider:
+        try:
+            provider_type, provider_info = get_enhanced_git_remote()
 
-            if not match:
-                raise GitProviderException("No se pudo extraer el repo de GitHub")
-            repo = match.group(2)
-            return GitHubAdapter(token=token, repo=repo)
+            if provider_type == 'github':
+                return GitHubAdapter(
+                    token=settings.github.token,
+                    repo=provider_info['repo']
+                )
 
-        elif "dev.azure.com" in url:
-            match = re.search(r"dev\.azure\.com/([^/]+)/([^/]+)/_git/([^/]+)", url)
-            token = settings.azure_devops.token
+            elif provider_type == 'azure_devops':
+                return AzureDevOpsAdapter(
+                    token=settings.azure_devops.token,
+                    organization=provider_info['organization'],
+                    project=provider_info['project'],
+                    repo=provider_info['repo']
+                )
 
-            if not match:
-                raise GitProviderException("No se pudo extraer info de Azure DevOps")
-            organization, project, repo = match.groups()
-            return AzureDevOpsAdapter(
-                token=token,
-                organization=organization,
-                project=project,
-                repo=repo
-            )
+            else:
+                raise GitProviderException(f"Proveedor Git no soportado: {provider_type}")
 
-        else:
-            raise GitProviderException("Proveedor Git no reconocido en la URL del repo")
+        except Exception as e:
+            raise GitProviderException(f"Error configurando proveedor Git: {str(e)}")
 
 
 container = Container()
