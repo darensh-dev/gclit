@@ -1,4 +1,7 @@
 requests
+pygit2>=1.12.0
+rich>=13.0.0
+click>=8.0.0
 
 # CLI y argumentos
 typer[all]
